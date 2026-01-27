@@ -1,0 +1,84 @@
+# ============================================================
+# GraphRAG + 开源模型 配置文件
+# 使用 Ollama + Qwen2.5 替代 OpenAI
+# ============================================================
+#
+# 【关键修改说明】
+# 原版使用 OpenAI，只需修改以下部分即可切换到开源模型:
+#
+#   OpenAI:                         Ollama:
+#   ──────────                      ──────────
+#   api_key: sk-xxx                 api_key: "ollama"
+#   model: gpt-4-turbo              model: qwen2.5:7b
+#   (默认api_base)                   api_base: http://localhost:11434/v1
+#
+# ============================================================
+
+# LLM 模型配置
+llm:
+  api_key: "ollama"
+  model: qwen2.5:7b
+  api_base: http://localhost:11434/v1
+
+  # 可选的其他开源模型:
+  # model: qwen2.5:14b          # 更强，需16GB+显存
+  # model: llama3.1:8b          # 英文为主
+  # model: mistral:7b           # 轻量快速
+
+  temperature: 0
+  max_tokens: 4096
+  max_retries: 3
+  concurrent_requests: 2
+  requests_per_minute: 0
+  tokens_per_minute: 0
+
+# Embedding 模型配置
+embeddings:
+  llm:
+    api_key: "ollama"
+    model: nomic-embed-text
+    api_base: http://localhost:11434/v1
+    # 可选: mxbai-embed-large, bge-m3
+
+# 文本分块
+chunks:
+  size: 300
+  overlap: 100
+
+# 输入配置
+input:
+  type: file
+  file_type: text
+  base_dir: input
+  encoding: utf-8
+
+# 输出配置
+storage:
+  type: file
+  base_dir: output
+
+cache:
+  type: file
+  base_dir: cache
+
+# 实体提取
+entity_extraction:
+  entity_types:
+    - person
+    - organization
+    - location
+    - event
+    - technology
+    - concept
+  max_gleanings: 1
+
+# 社区聚类
+cluster_graph:
+  max_cluster_size: 10
+
+# 搜索配置
+local_search:
+  max_tokens: 8000
+
+global_search:
+  max_tokens: 8000

@@ -1,0 +1,59 @@
+人工智能与大语言模型发展综述
+
+一、人工智能发展历程
+
+人工智能（Artificial Intelligence，AI）是计算机科学的重要分支。1956年，约翰·麦卡锡在达特茅斯会议上首次提出"人工智能"这一术语，标志着AI作为独立学科的诞生。
+
+早期的AI研究主要集中在符号推理和专家系统。MYCIN是早期著名的专家系统，用于医疗诊断。然而由于计算能力限制，AI在1970年代末进入第一次"AI寒冬"。
+
+二、深度学习革命
+
+2012年，杰弗里·辛顿带领的团队使用深度卷积神经网络AlexNet在ImageNet竞赛中取得突破。这一成就重新点燃了业界对神经网络的兴趣。辛顿与Yann LeCun、Yoshua Bengio被誉为"深度学习三巨头"，他们于2018年共同获得图灵奖。
+
+三、Transformer架构的诞生
+
+2017年，谷歌团队发表论文《Attention Is All You Need》，提出Transformer架构。Transformer摒弃了传统的循环神经网络结构，完全基于自注意力机制（Self-Attention），实现了高效的并行计算。
+
+Transformer的核心创新包括：
+- 多头注意力机制（Multi-Head Attention）
+- 位置编码（Positional Encoding）
+- 前馈神经网络层
+
+四、GPT系列的崛起
+
+OpenAI基于Transformer开发了GPT系列模型：
+
+GPT-1（2018年）：首次证明生成式预训练的有效性
+GPT-2（2019年）：15亿参数，展示了惊人的文本生成能力
+GPT-3（2020年）：1750亿参数，引入了少样本学习能力
+GPT-4（2023年）：多模态能力，性能大幅提升
+
+2022年11月，OpenAI发布ChatGPT，基于GPT-3.5，在两个月内用户数突破1亿。
+
+五、开源模型生态
+
+Meta发布Llama系列，推动了开源大模型发展：
+- Llama 2：7B/13B/70B三个规格，允许商用
+- Llama 3：性能进一步提升
+
+中文模型方面：
+- 阿里巴巴的Qwen（通义千问）系列，中文能力出色
+- 百度的文心大模型
+- 清华的ChatGLM
+
+六、RAG技术
+
+检索增强生成（Retrieval-Augmented Generation，RAG）将信息检索与语言模型结合：
+1. 将文档向量化存入向量数据库
+2. 查询时检索相关文档
+3. 将检索结果与问题一起输入LLM
+
+GraphRAG是微软提出的增强方案，通过构建知识图谱和社区检测，支持全局理解和复杂推理。
+
+七、主要研究机构
+
+- OpenAI（美国）：GPT系列、ChatGPT
+- DeepMind（英国/谷歌）：AlphaGo、Gemini
+- Meta AI Research：Llama系列
+- 阿里达摩院：通义千问
+- 百度研究院：文心大模型

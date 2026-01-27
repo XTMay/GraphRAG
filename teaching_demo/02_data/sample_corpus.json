@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "description": "Sample corpus for GraphRAG teaching demo",
+    "topic": "AI Companies and Technologies",
+    "purpose": "Demonstrates multi-hop reasoning requirements",
+    "num_documents": 5
+  },
+  "documents": [
+    {
+      "id": "doc_001",
+      "title": "OpenAI Overview",
+      "content": "OpenAI is an artificial intelligence research company founded in 2015 by Sam Altman, Elon Musk, Greg Brockman, and others. Sam Altman currently serves as CEO of OpenAI. The company is headquartered in San Francisco, California. OpenAI developed several groundbreaking AI systems including GPT-3, GPT-4, ChatGPT, and DALL-E. ChatGPT, released in November 2022, became the fastest-growing consumer application in history, reaching 100 million users within two months. OpenAI's GPT-4 is a large multimodal model capable of processing both text and images."
+    },
+    {
+      "id": "doc_002",
+      "title": "Google and the Transformer",
+      "content": "Google is a technology company founded by Larry Page and Sergey Brin in 1998 while they were PhD students at Stanford University. Google is now a subsidiary of Alphabet Inc. In 2017, researchers at Google published the influential paper 'Attention Is All You Need', which introduced the Transformer architecture. The lead authors included Ashish Vaswani and Jakob Uszkoreit. The Transformer architecture revolutionized natural language processing and became the foundation for models like BERT, GPT, and T5. Google also developed BERT (Bidirectional Encoder Representations from Transformers) in 2018."
+    },
+    {
+      "id": "doc_003",
+      "title": "Meta AI and Open Source",
+      "content": "Meta, formerly known as Facebook, was founded by Mark Zuckerberg in 2004. Meta operates the Facebook, Instagram, and WhatsApp platforms. Meta AI Research, led by Yann LeCun as Chief AI Scientist, has made significant contributions to open-source AI. In 2023, Meta released the Llama 2 model family, which includes 7B, 13B, and 70B parameter versions. Llama 2 was released under a permissive license allowing commercial use. Meta later released Llama 3 in 2024 with improved performance. Yann LeCun is also a Turing Award winner alongside Geoffrey Hinton and Yoshua Bengio."
+    },
+    {
+      "id": "doc_004",
+      "title": "The Deep Learning Revolution",
+      "content": "Geoffrey Hinton, often called the 'Godfather of Deep Learning', made foundational contributions to neural networks and deep learning. Along with Yann LeCun and Yoshua Bengio, Hinton received the 2018 Turing Award for their work on deep learning. Hinton worked at Google from 2013 to 2023 before leaving to speak more freely about AI risks. His student Ilya Sutskever co-founded OpenAI and served as Chief Scientist. AlexNet, developed by Hinton's students Alex Krizhevsky and Ilya Sutskever, won the ImageNet competition in 2012, sparking the deep learning revolution."
+    },
+    {
+      "id": "doc_005",
+      "title": "Chinese AI Development",
+      "content": "Alibaba, founded by Jack Ma in 1999, has developed the Qwen (通义千问) series of large language models through its DAMO Academy research division. Qwen 2.5 supports multiple languages with strong Chinese language capabilities. Baidu, founded by Robin Li, developed the ERNIE (Enhanced Representation through Knowledge Integration) series and the Wenxin Yiyan (文心一言) chatbot. Tsinghua University's research group developed ChatGLM, an open bilingual language model. These Chinese models compete with Western models in Chinese language understanding and generation tasks."
+    }
+  ]
+}

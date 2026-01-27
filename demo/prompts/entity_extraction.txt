@@ -1,0 +1,91 @@
+-目标-
+给定一段可能与此活动相关的文本文档和实体类型列表，从文本中识别出这些类型的所有实体以及识别出的实体之间所有明显相关的关系。
+
+-步骤-
+1. 识别所有实体。对于每个识别出的实体，提取以下信息：
+- entity_name: 实体的名称，使用与输入文本相同的语言。如果是英文，将名称大写。
+- entity_type: 以下类型之一: [{entity_types}]
+- entity_description: 实体属性和活动的全面描述
+
+将每个实体格式化为 ("entity"{tuple_delimiter}<entity_name>{tuple_delimiter}<entity_type>{tuple_delimiter}<entity_description>)
+
+2. 从步骤1中识别的实体中，识别所有*明显相关*的(source_entity, target_entity)对。
+对于每对相关实体，提取以下信息：
+- source_entity: 步骤1中识别的源实体名称
+- target_entity: 步骤1中识别的目标实体名称
+- relationship_description: 解释为什么你认为源实体和目标实体相互关联
+- relationship_strength: 表示源实体和目标实体之间关系强度的1到10之间的整数分数
+- relationship_keywords: 一个或多个高级关键词，总结关系的总体性质，侧重于概念或主题而非具体细节
+
+将每个关系格式化为 ("relationship"{tuple_delimiter}<source_entity>{tuple_delimiter}<target_entity>{tuple_delimiter}<relationship_description>{tuple_delimiter}<relationship_keywords>{tuple_delimiter}<relationship_strength>)
+
+3. 识别总结整个文本主要概念、主题或话题的高级关键词。这些关键词应该捕获文档中存在的总体思想。
+将内容级关键词格式化为 ("content_keywords"{tuple_delimiter}<high_level_keywords>)
+
+4. 以中文作为输出语言。将每个元组作为单行输出。
+
+5. 完成后返回输出。不要重复提取相同的实体或关系。
+
+######################
+-示例-
+######################
+示例 1:
+
+Entity_types: [person, technology, organization, event, location, concept]
+Text:
+2017年，谷歌团队发表了论文《Attention Is All You Need》，提出了Transformer架构。这篇论文由Ashish Vaswani等人撰写，被认为是自然语言处理领域的里程碑。Transformer架构摒弃了传统的循环神经网络结构，完全基于注意力机制，大大提高了模型的并行计算能力。
+################
+Output:
+("entity"{tuple_delimiter}谷歌{tuple_delimiter}organization{tuple_delimiter}谷歌是一家全球性科技公司，在人工智能研究领域处于领先地位)
+{record_delimiter}
+("entity"{tuple_delimiter}Transformer{tuple_delimiter}technology{tuple_delimiter}Transformer是一种基于注意力机制的神经网络架构，用于自然语言处理等任务)
+{record_delimiter}
+("entity"{tuple_delimiter}Ashish Vaswani{tuple_delimiter}person{tuple_delimiter}Ashish Vaswani是Transformer论文的主要作者之一)
+{record_delimiter}
+("entity"{tuple_delimiter}Attention Is All You Need{tuple_delimiter}concept{tuple_delimiter}《Attention Is All You Need》是提出Transformer架构的开创性论文)
+{record_delimiter}
+("entity"{tuple_delimiter}2017年{tuple_delimiter}event{tuple_delimiter}2017年是Transformer架构被提出的时间)
+{record_delimiter}
+("relationship"{tuple_delimiter}谷歌{tuple_delimiter}Transformer{tuple_delimiter}谷歌团队开发并发表了Transformer架构{tuple_delimiter}研发,发明{tuple_delimiter}9)
+{record_delimiter}
+("relationship"{tuple_delimiter}Ashish Vaswani{tuple_delimiter}Transformer{tuple_delimiter}Ashish Vaswani是Transformer论文的作者{tuple_delimiter}创作,发明{tuple_delimiter}9)
+{record_delimiter}
+("relationship"{tuple_delimiter}Transformer{tuple_delimiter}Attention Is All You Need{tuple_delimiter}Transformer架构在论文《Attention Is All You Need》中首次提出{tuple_delimiter}提出,发表{tuple_delimiter}10)
+{record_delimiter}
+("content_keywords"{tuple_delimiter}人工智能,深度学习,自然语言处理,Transformer,注意力机制)
+{completion_delimiter}
+
+######################
+示例 2:
+
+Entity_types: [person, technology, organization, event, location, concept]
+Text:
+OpenAI于2022年11月发布了ChatGPT，这是一个基于GPT-3.5的大型语言模型对话系统。ChatGPT展现了惊人的语言理解和生成能力，能够进行自然流畅的对话、编写代码、撰写文章等多种任务。发布后仅两个月，ChatGPT的用户数就突破了1亿，成为历史上增长最快的消费者应用。OpenAI的CEO Sam Altman表示，这标志着人工智能进入了新纪元。
+################
+Output:
+("entity"{tuple_delimiter}OpenAI{tuple_delimiter}organization{tuple_delimiter}OpenAI是一家人工智能研究公司，开发了ChatGPT等知名AI产品)
+{record_delimiter}
+("entity"{tuple_delimiter}ChatGPT{tuple_delimiter}technology{tuple_delimiter}ChatGPT是OpenAI开发的基于GPT-3.5的大型语言模型对话系统，具有强大的语言理解和生成能力)
+{record_delimiter}
+("entity"{tuple_delimiter}GPT-3.5{tuple_delimiter}technology{tuple_delimiter}GPT-3.5是OpenAI开发的大型语言模型，是ChatGPT的基础模型)
+{record_delimiter}
+("entity"{tuple_delimiter}Sam Altman{tuple_delimiter}person{tuple_delimiter}Sam Altman是OpenAI的首席执行官)
+{record_delimiter}
+("entity"{tuple_delimiter}2022年11月{tuple_delimiter}event{tuple_delimiter}2022年11月是ChatGPT发布的时间)
+{record_delimiter}
+("relationship"{tuple_delimiter}OpenAI{tuple_delimiter}ChatGPT{tuple_delimiter}OpenAI开发并发布了ChatGPT{tuple_delimiter}开发,发布{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}ChatGPT{tuple_delimiter}GPT-3.5{tuple_delimiter}ChatGPT是基于GPT-3.5模型构建的{tuple_delimiter}基于,构建{tuple_delimiter}9)
+{record_delimiter}
+("relationship"{tuple_delimiter}Sam Altman{tuple_delimiter}OpenAI{tuple_delimiter}Sam Altman是OpenAI的CEO{tuple_delimiter}领导,管理{tuple_delimiter}9)
+{record_delimiter}
+("content_keywords"{tuple_delimiter}人工智能,大型语言模型,ChatGPT,对话系统,OpenAI)
+{completion_delimiter}
+
+######################
+-真实数据-
+######################
+Entity_types: {entity_types}
+Text: {input_text}
+######################
+Output:
