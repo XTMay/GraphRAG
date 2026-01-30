@@ -1,0 +1,32 @@
+# Smart Home Graph Agent - Dependencies
+# =====================================
+
+# Neo4j Python Driver
+neo4j>=5.14.0
+
+# LangChain ecosystem
+langchain>=0.1.0
+langchain-openai>=0.0.5
+langchain-community>=0.0.10
+
+# LangGraph for agent workflows
+langgraph>=0.0.20
+
+# Environment management
+python-dotenv>=1.0.0
+
+# Data handling
+pydantic>=2.5.0
+
+# Optional: for notebooks
+jupyter>=1.0.0
+ipykernel>=6.27.0
+
+# Optional: for visualization
+matplotlib>=3.8.0
+networkx>=3.2.0
+plotly>=5.18.0  # For interactive charts
+
+# Streamlit UI
+streamlit>=1.29.0
+pandas>=2.0.0
