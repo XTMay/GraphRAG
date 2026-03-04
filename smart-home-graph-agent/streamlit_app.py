@@ -99,12 +99,13 @@ def render_sidebar():
         # Quick status
         st.subheader("System Status")
 
-        # Check OpenAI
-        api_key = os.getenv("OPENAI_API_KEY")
-        if api_key:
-            st.success("✓ OpenAI API Key")
+        # Check LLM provider
+        from src.llm import get_llm_info
+        llm_info = get_llm_info()
+        if llm_info["status"] == "ok":
+            st.success(f"✓ LLM: {llm_info['provider'].upper()} ({llm_info['model']})")
         else:
-            st.error("✗ OpenAI API Key missing")
+            st.error(f"✗ LLM: {llm_info['detail']}")
 
         # Check Neo4j
         conn = get_connection()
@@ -483,18 +484,18 @@ def render_system_status():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("🔑 API Configuration")
+        st.subheader("🔑 LLM Configuration")
 
-        # OpenAI
-        api_key = os.getenv("OPENAI_API_KEY")
-        if api_key:
-            masked = api_key[:8] + "..." + api_key[-4:]
-            st.success(f"✓ OpenAI API Key: `{masked}`")
-            model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-            st.info(f"Model: `{model}`")
+        from src.llm import get_llm_info
+        llm_info = get_llm_info()
+        st.info(f"Provider: **{llm_info['provider'].upper()}**")
+        st.info(f"Model: `{llm_info['model']}`")
+
+        if llm_info["status"] == "ok":
+            st.success(f"✓ {llm_info['detail']}")
         else:
-            st.error("✗ OpenAI API Key not set")
-            st.code("OPENAI_API_KEY=sk-your-key", language="bash")
+            st.error(f"✗ {llm_info['detail']}")
+            st.code("# Set LLM_PROVIDER and credentials in .env", language="bash")
 
         st.divider()
 
@@ -572,12 +573,27 @@ docker run --name neo4j-smarthome \\
         """, language="bash")
 
     with st.expander("2. Configure .env"):
-        st.code("""
-NEO4J_URI=bolt://localhost:7687
-NEO4J_USER=neo4j
-NEO4J_PASSWORD=password123
+        st.markdown("Choose your LLM provider:")
+
+        st.markdown("**Option A: OpenAI (cloud)**")
+        st.code("""LLM_PROVIDER=openai
 OPENAI_API_KEY=sk-your-key-here
-        """, language="bash")
+OPENAI_MODEL=gpt-4o-mini""", language="bash")
+
+        st.markdown("**Option B: Qwen/DashScope (cloud)**")
+        st.code("""LLM_PROVIDER=qwen
+DASHSCOPE_API_KEY=sk-your-key-here
+QWEN_MODEL=qwen-turbo""", language="bash")
+
+        st.markdown("**Option C: Ollama (local, no API key)**")
+        st.code("""LLM_PROVIDER=ollama
+OLLAMA_MODEL=qwen2.5:7b
+OLLAMA_BASE_URL=http://localhost:11434""", language="bash")
+
+        st.markdown("**Neo4j (required for all providers):**")
+        st.code("""NEO4J_URI=bolt://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=password123""", language="bash")
 
     with st.expander("3. Load Seed Data"):
         st.markdown("""

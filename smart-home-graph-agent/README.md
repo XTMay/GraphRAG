@@ -30,21 +30,54 @@ smart-home-graph-agent/
 ├── README.md                    # This file
 ├── requirements.txt             # Python dependencies
 ├── .env.example                 # Environment template
+├── api_server.py                # FastAPI REST API entry point
+├── app.py                       # CLI entry point
+├── streamlit_app.py             # Streamlit UI entry point
+├── Dockerfile                   # Multi-stage Docker build
+├── docker-compose.yml           # Multi-service orchestration
+├── .dockerignore                # Docker build exclusions
 │
 ├── data/
 │   └── seed_graph.cypher        # Neo4j seed data
 │
 ├── src/
 │   ├── __init__.py
-│   └── graph/
+│   ├── api/                     # FastAPI web service
+│   │   ├── __init__.py
+│   │   ├── models.py            # Pydantic request/response models
+│   │   ├── server.py            # FastAPI app and endpoints
+│   │   └── middleware.py        # Logging, rate limiting
+│   ├── agent/                   # Agent implementations
+│   │   ├── __init__.py
+│   │   ├── state.py             # AgentState definition
+│   │   ├── workflow.py          # Explicit workflow agent
+│   │   ├── nodes.py             # Workflow node functions
+│   │   ├── prompts.py           # Prompt templates
+│   │   ├── tools.py             # LangChain Tool definitions
+│   │   ├── memory.py            # Conversation memory
+│   │   └── tool_agent.py        # ReAct tool-calling agent
+│   ├── graph/                   # Neo4j knowledge graph
+│   │   ├── __init__.py
+│   │   ├── connection.py        # Neo4j connection
+│   │   ├── queries.py           # Cypher templates
+│   │   └── retriever.py         # GraphRAG retriever
+│   ├── llm/                     # LLM factory
+│   │   ├── __init__.py
+│   │   └── factory.py           # Multi-LLM factory (OpenAI/Qwen/Ollama)
+│   └── utils/                   # Utilities
 │       ├── __init__.py
-│       ├── connection.py        # Neo4j connection
-│       ├── queries.py           # Cypher templates
-│       └── retriever.py         # GraphRAG retriever
+│       └── output_parser.py     # JSON/output parsing
 │
-└── notebooks/
-    ├── 01_explore_neo4j.ipynb   # Graph exploration
-    └── 02_graphrag_basics.ipynb # Retrieval demo
+├── docs/                        # Teaching documentation (Chinese)
+│   ├── 00_课程概述.md ~ 06_系统架构图.md
+│   ├── 07_FastAPI_Web服务.md    # FastAPI + REST API + SSE
+│   ├── 08_Docker容器化部署.md   # Dockerfile + Docker Compose
+│   └── 09_高级Agent模式.md      # Tool Use + Memory + Patterns
+│
+└── notebooks/                   # Interactive labs
+    ├── 01_explore_neo4j.ipynb ~ 04_multi_llm.ipynb
+    ├── 05_fastapi_web_service.ipynb      # API testing lab
+    └── 06_advanced_agent_patterns.ipynb  # Advanced agent lab
 ```
 
 ---
@@ -116,14 +149,30 @@ streamlit run streamlit_app.py
 
 Open http://localhost:8501 in your browser.
 
-**Option B: Command Line Interface**
+**Option B: REST API**
+
+```bash
+python api_server.py
+```
+
+Open http://localhost:8000/docs for Swagger UI.
+
+**Option C: Command Line Interface**
 
 ```bash
 python app.py              # Interactive mode
 python app.py --debug      # Debug mode with trace
 ```
 
-**Option C: Jupyter Notebooks**
+**Option D: Docker Deployment (all services)**
+
+```bash
+docker compose up
+```
+
+This starts Neo4j + API + Streamlit together.
+
+**Option E: Jupyter Notebooks**
 
 ```bash
 jupyter notebook notebooks/
@@ -154,6 +203,16 @@ streamlit run streamlit_app.py
 - Graph visualization by room
 - Retrieval strategy comparison
 
+### REST API
+
+```bash
+python api_server.py                    # Start API server
+python api_server.py --port 8080        # Custom port
+python api_server.py --reload           # Dev mode with auto-reload
+```
+
+Access Swagger UI at http://localhost:8000/docs
+
 ### Command Line Interface
 
 ```bash
@@ -172,36 +231,93 @@ python app.py --status           # System check
 | 01_explore_neo4j | Graph basics, Cypher queries | 30 min |
 | 02_graphrag_basics | Retrieval strategies | 30 min |
 | 03_full_agent | LangGraph workflow (Phase 3-4) | 45 min |
+| 04_multi_llm | Multi-LLM backends & Factory Pattern | 30 min |
+| 05_fastapi_web_service | REST API, SSE streaming, middleware | 45 min |
+| 06_advanced_agent_patterns | Tool Use, memory, agent comparison | 45 min |
+
+---
+
+## 🔧 LLM Provider Configuration
+
+This project supports **three LLM backends**. Set `LLM_PROVIDER` in `.env` to switch:
+
+| Provider | `LLM_PROVIDER` | Required Env Vars | Install |
+|----------|----------------|-------------------|---------|
+| **OpenAI** (default) | `openai` | `OPENAI_API_KEY`, `OPENAI_MODEL` | `pip install langchain-openai` |
+| **Qwen/通义千问** | `qwen` | `DASHSCOPE_API_KEY`, `QWEN_MODEL` | `pip install dashscope` |
+| **Ollama** (local) | `ollama` | `OLLAMA_MODEL`, `OLLAMA_BASE_URL` | `pip install langchain-ollama` + [Ollama](https://ollama.ai) |
+
+### Example `.env` Configurations
+
+**OpenAI (cloud, default):**
+```bash
+LLM_PROVIDER=openai
+OPENAI_API_KEY=sk-your-key-here
+OPENAI_MODEL=gpt-4o-mini
+```
+
+**Qwen/DashScope (cloud):**
+```bash
+LLM_PROVIDER=qwen
+DASHSCOPE_API_KEY=sk-your-key-here
+QWEN_MODEL=qwen-turbo
+```
+
+**Ollama (local, no API key):**
+```bash
+LLM_PROVIDER=ollama
+OLLAMA_MODEL=qwen2.5:7b
+OLLAMA_BASE_URL=http://localhost:11434
+```
+
+> **Backward compatible:** If `LLM_PROVIDER` is not set, it defaults to `openai`.
+
+### Architecture: Factory Pattern
+
+```
+.env (LLM_PROVIDER=openai/qwen/ollama)
+         |
+         v
+    get_llm()  ← Factory Function
+    /    |    \
+   v     v     v
+ChatOpenAI  ChatTongyi  ChatOllama
+   \     |     /
+    v    v    v
+  BaseChatModel.invoke()  ← Unified interface
+```
+
+All agent nodes call `get_llm()` — switching providers requires **zero code changes**.
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────┐
-│   User Input    │  "Make it cozy for movie night"
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Parse Intent   │  Extract: room, mood, scene
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  GraphRAG       │  Query Neo4j for devices,
-│  Retrieval      │  capabilities, scenes
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  LLM Reasoning  │  Match intent to capabilities
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Action Plan    │  [{device, action, value}, ...]
-└─────────────────┘
+┌───────────────────────────────────────────────────┐
+│                  User Interfaces                  │
+│  CLI (app.py)  │  Streamlit  │  REST API (FastAPI)│
+└───────┬────────┴─────┬───────┴──────┬─────────────┘
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+          ┌────────────────────────┐
+          │     Agent Layer        │
+          │  SmartHomeAgent        │  ← Explicit Workflow
+          │  ToolCallingAgent      │  ← ReAct + Tool Use
+          │  ConversationMemory    │  ← Multi-turn Support
+          └───────────┬────────────┘
+                      │
+          ┌───────────▼────────────┐
+          │    GraphRAG Retrieval  │
+          │  Room / Scene / Cap /  │
+          │  Keyword strategies    │
+          └───────────┬────────────┘
+                      │
+          ┌───────────▼────────────┐
+          │   Neo4j Knowledge      │
+          │   Graph Database       │
+          └────────────────────────┘
 ```
 
 ---
@@ -248,6 +364,9 @@ python app.py --status           # System check
 - [x] **Phase 3**: LangChain LLM integration
 - [x] **Phase 4**: LangGraph agent workflow
 - [x] **Phase 5**: CLI demo interface
+- [x] **Phase 6**: FastAPI REST API + SSE streaming
+- [x] **Phase 7**: Docker containerization + Compose orchestration
+- [x] **Phase 8**: Advanced Agent patterns (Tool Use + Memory + ReAct)
 
 ---
 

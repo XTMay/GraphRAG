@@ -12,11 +12,11 @@ Teaching Points:
 """
 
 import json
-import os
 from typing import Literal
 
-from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
+
+from src.llm import get_llm
 
 from src.agent.state import AgentState
 from src.agent.prompts import (
@@ -31,24 +31,6 @@ from src.utils.output_parser import (
     extract_json,
 )
 from src.graph.retriever import SmartHomeRetriever
-
-
-# =========================================
-# LLM SETUP
-# =========================================
-
-def get_llm(temperature: float = 0.0) -> ChatOpenAI:
-    """
-    Get configured LLM instance.
-
-    Teaching Point:
-        We use temperature=0 for deterministic outputs
-        in planning tasks. Higher temperatures for creative tasks.
-    """
-    return ChatOpenAI(
-        model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
-        temperature=temperature,
-    )
 
 
 # Global retriever instance (initialized lazily)

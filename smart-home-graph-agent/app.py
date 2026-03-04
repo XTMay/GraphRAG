@@ -90,14 +90,16 @@ def check_status():
     print("\n📊 System Status")
     print("-" * 40)
 
-    # Check OpenAI key
-    api_key = os.getenv("OPENAI_API_KEY")
-    if api_key:
-        masked = api_key[:8] + "..." + api_key[-4:] if len(api_key) > 12 else "***"
-        print(f"✓ OpenAI API Key: {masked}")
+    # Check LLM provider
+    from src.llm import get_llm_info
+    info = get_llm_info()
+    provider_label = info["provider"].upper()
+    if info["status"] == "ok":
+        print(f"✓ LLM Provider: {provider_label} (model: {info['model']})")
+        print(f"  {info['detail']}")
     else:
-        print("✗ OpenAI API Key: Not set")
-        print("  Set OPENAI_API_KEY in .env file")
+        print(f"✗ LLM Provider: {provider_label} — {info['detail']}")
+        print("  Check LLM_PROVIDER and credentials in .env file")
 
     # Check Neo4j connection
     try:
@@ -132,7 +134,7 @@ def run_interactive(debug: bool = False):
         print("\n✓ Agent initialized successfully!")
     except Exception as e:
         print(f"\n✗ Failed to initialize agent: {e}")
-        print("  Make sure Neo4j is running and OPENAI_API_KEY is set.")
+        print("  Make sure Neo4j is running and LLM provider is configured in .env.")
         return
 
     print("\nReady for requests. Type 'help' for commands.\n")

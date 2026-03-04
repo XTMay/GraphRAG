@@ -1,0 +1,95 @@
+# =========================================
+# Smart Home Graph Agent - Docker Compose
+# =========================================
+#
+# Orchestrates three services:
+#   1. neo4j    - Graph database
+#   2. api      - FastAPI REST service
+#   3. streamlit - Streamlit web UI
+#
+# Usage:
+#   docker compose up              # Start all services
+#   docker compose up -d           # Start in background
+#   docker compose logs -f api     # Follow API logs
+#   docker compose down            # Stop all services
+#
+# Teaching Points:
+# - depends_on with service_healthy ensures correct startup order
+# - Volumes persist Neo4j data across container restarts
+# - Environment variables are injected from .env file
+# - Services communicate via Docker network (service name = hostname)
+
+services:
+  # =========================================
+  # Neo4j Graph Database
+  # =========================================
+  neo4j:
+    image: neo4j:5-community
+    ports:
+      - "7474:7474"   # HTTP (Browser UI)
+      - "7687:7687"   # Bolt (Driver protocol)
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-password123}
+      NEO4J_PLUGINS: '[]'
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # =========================================
+  # FastAPI REST API
+  # =========================================
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Neo4j connection (service name "neo4j" is the hostname in Docker network)
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-password123}
+      # LLM configuration (passed from host .env)
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
+      QWEN_MODEL: ${QWEN_MODEL:-qwen-turbo}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:7b}
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    command: ["python", "api_server.py", "--host", "0.0.0.0"]
+
+  # =========================================
+  # Streamlit Web UI
+  # =========================================
+  streamlit:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-password123}
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
+      QWEN_MODEL: ${QWEN_MODEL:-qwen-turbo}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:7b}
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    command: ["streamlit", "run", "streamlit_app.py", "--server.address", "0.0.0.0"]
+
+# Persistent volumes for Neo4j data
+volumes:
+  neo4j_data:
+  neo4j_logs:

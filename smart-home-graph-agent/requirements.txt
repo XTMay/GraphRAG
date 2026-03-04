@@ -27,6 +27,18 @@ matplotlib>=3.8.0
 networkx>=3.2.0
 plotly>=5.18.0  # For interactive charts
 
+# Qwen/DashScope backend (optional)
+dashscope>=1.14.0
+
+# Ollama backend (optional)
+langchain-ollama>=0.1.0
+
 # Streamlit UI
 streamlit>=1.29.0
 pandas>=2.0.0
+
+# FastAPI Web Service
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+sse-starlette>=1.8.0
+httpx>=0.25.0
