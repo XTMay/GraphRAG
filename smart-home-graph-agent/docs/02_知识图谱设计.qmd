@@ -1,4 +1,12 @@
-# 第二章：知识图谱设计
+---
+title: "第二章：知识图谱设计"
+format:
+  html:
+    code-fold: true
+    code-tools: true
+    toc: true
+    number-sections: true
+---
 
 ## 本章目标
 
@@ -660,4 +668,4 @@ RETURN {
 
 ---
 
-下一节：[03_GraphRAG详解.md](./03_GraphRAG详解.md)
+下一节：[03_GraphRAG详解.qmd](./03_GraphRAG详解.qmd)

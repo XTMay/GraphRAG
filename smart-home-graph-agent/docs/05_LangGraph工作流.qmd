@@ -1,4 +1,12 @@
-# 第五章：LangGraph工作流
+---
+title: "第五章：LangGraph工作流"
+format:
+  html:
+    code-fold: true
+    code-tools: true
+    toc: true
+    number-sections: true
+---
 
 ## 本章目标
 
@@ -658,4 +666,4 @@ print("推理轨迹:", state["reasoning_trace"])
 
 ---
 
-下一节：[06_系统架构图.md](./06_系统架构图.md)
+下一节：[06_系统架构图.qmd](./06_系统架构图.qmd)

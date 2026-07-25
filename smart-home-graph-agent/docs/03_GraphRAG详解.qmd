@@ -1,4 +1,12 @@
-# 第三章：GraphRAG详解
+---
+title: "第三章：GraphRAG详解"
+format:
+  html:
+    code-fold: true
+    code-tools: true
+    toc: true
+    number-sections: true
+---
 
 ## 本章目标
 
@@ -698,4 +706,4 @@ class RetrievalResult:
 
 ---
 
-下一节：[04_LangChain集成.md](./04_LangChain集成.md)
+下一节：[04_LangChain集成.qmd](./04_LangChain集成.qmd)

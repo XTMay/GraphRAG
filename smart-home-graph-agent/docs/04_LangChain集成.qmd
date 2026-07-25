@@ -1,4 +1,12 @@
-# 第四章：LangChain集成
+---
+title: "第四章：LangChain集成"
+format:
+  html:
+    code-fold: true
+    code-tools: true
+    toc: true
+    number-sections: true
+---
 
 ## 本章目标
 
@@ -595,4 +603,4 @@ print(f"氛围: {intent.mood}")
 
 ---
 
-下一节：[05_LangGraph工作流.md](./05_LangGraph工作流.md)
+下一节：[05_LangGraph工作流.qmd](./05_LangGraph工作流.qmd)

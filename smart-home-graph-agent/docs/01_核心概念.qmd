@@ -1,4 +1,12 @@
-# 第一章：核心概念
+---
+title: "第一章：核心概念"
+format:
+  html:
+    code-fold: true
+    code-tools: true
+    toc: true
+    number-sections: true
+---
 
 ## 本章目标
 
@@ -639,4 +647,4 @@ result = chain.invoke({"user_input": "把客厅灯调暗一点"})
 
 ---
 
-下一节：[02_知识图谱设计.md](./02_知识图谱设计.md)
+下一节：[02_知识图谱设计.qmd](./02_知识图谱设计.qmd)
